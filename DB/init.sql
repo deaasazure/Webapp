@@ -83,9 +83,8 @@ CREATE TABLE mlaas.subscription_plan_tbl (
 
 --Create video master table
 CREATE TABLE mlaas.video_master_tbl (
-    vid bigserial NOT NULL,
-    vname text NULL,
-    menuid text NULL,
+    video_id bigserial NOT NULL,
+    video_name text NULL,
     file_name text NULL,
     file_size int8 NULL,
     file_path text NULL,
@@ -95,6 +94,18 @@ CREATE TABLE mlaas.video_master_tbl (
     created_on timestamptz NOT NULL DEFAULT now()
 );
 
+--Create video master table
+CREATE TABLE mlaas.video_reaction_tbl (
+    video_id int8 NOT NULL,
+    likes int8 NULL,
+    unlikes int8 NULL,
+    victory int8 NULL,
+    frustration int8 NULL,
+    anger int8 NULL,
+	comment text NULL,
+    user_name text NULL,
+    created_on timestamptz NOT NULL DEFAULT now()
+);
 --Create video master table
 CREATE TABLE mlaas.player_stats_tbl (
     usid bigserial NOT NULL,
