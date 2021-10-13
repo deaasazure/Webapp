@@ -1,0 +1,155 @@
+stages:
+  - automation_tests
+  - building_test_image
+  - building_production_image
+  - deployment
+
+Automation Testing:
+  image: tmaier/docker-compose:latest
+  stage: automation_tests
+  services:
+    - docker:dind
+  before_script:
+    - docker-compose build web 
+    - docker-compose build postgres 
+    - docker-compose build airflow 
+    - docker-compose build mlflow 
+    - docker volume prune -f
+    - docker-compose -f testing_docker-compose.yml up -d &
+    #- docker-compose up &
+    - sleep 24s
+  script:
+    #- docker ps
+    #- docker images
+    - docker exec ms_container sh -c "cd testing && python -m unittest ingest_test"
+    - docker exec ms_container sh -c "cd testing && python -m unittest preprocess_test"
+  only:
+    # - development
+    # - uat
+    - master
+
+Creating Testing Docker Images:
+  image: docker:latest
+  stage: building_test_image
+  services:
+    - docker:dind
+
+  variables:
+    #? Naming the Image:  Image_name:modulename-time_of_commit-commit_hash
+    DB_IMAGE: $CI_REGISTRY_IMAGE:db-$CI_COMMIT_SHORT_SHA
+    DB_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:db-latest
+    MS_IMAGE: $CI_REGISTRY_IMAGE:ms-$CI_COMMIT_SHORT_SHA
+    MS_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:ms-latest
+    WEB_IMAGE: $CI_REGISTRY_IMAGE:web-$CI_COMMIT_SHORT_SHA
+    WEB_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:web-latest
+    AF_IMAGE: $CI_REGISTRY_IMAGE:af-$CI_COMMIT_SHORT_SHA
+    AF_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:af-latest
+    
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  script:
+    # Building DB Image
+    - echo "Building Database Image"
+    - cd DB
+    #- docker pull $DB_RELEASE_IMAGE || true
+    #- docker build --cache-from $DB_RELEASE_IMAGE --tag $DB_IMAGE --tag $DB_RELEASE_IMAGE .
+    - docker build --tag $DB_IMAGE --tag $DB_RELEASE_IMAGE .
+    - docker push $DB_IMAGE
+    - docker push $DB_RELEASE_IMAGE
+    - cd ..
+    
+    # Building Micro-Service Image 
+    - echo "Building Micro-Service Image"
+    - cd MS
+    #- docker pull $MS_RELEASE_IMAGE || true
+    #- docker build --cache-from $MS_RELEASE_IMAGE --tag $MS_IMAGE --tag $MS_RELEASE_IMAGE .
+    - docker build --tag $MS_IMAGE --tag $MS_RELEASE_IMAGE .
+    - docker push $MS_IMAGE
+    - docker push $MS_RELEASE_IMAGE
+    - cd ..
+    
+    # Building Web Image
+    - echo "Building Web Image"
+    - cd Web
+    #- docker pull $WEB_RELEASE_IMAGE || true
+    #- docker build --cache-from $WEB_RELEASE_IMAGE --tag $WEB_IMAGE --tag $WEB_RELEASE_IMAGE .
+    - docker build --tag $WEB_IMAGE --tag $WEB_RELEASE_IMAGE .
+    - docker push $WEB_IMAGE
+    - docker push $WEB_RELEASE_IMAGE
+    - cd ..
+
+    # Building Airflow Image
+    - echo "Building Airflow Image"
+    - cd airflow
+    - docker build --tag $AF_IMAGE --tag $AF_RELEASE_IMAGE .
+    - docker push $AF_IMAGE
+    - docker push $AF_RELEASE_IMAGE
+    - cd ..
+
+  only:
+    # - uat
+    - UAT
+    - uAT
+
+Creating Production Docker Images:
+  image: docker:latest
+  stage: building_production_image
+  services:
+    - docker:dind
+
+  variables:
+    #? Naming the Image:  Image_name:modulename-time_of_commit-commit_hash
+    DB_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:db-production
+    MS_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:ms-production
+    WEB_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:web-production
+    AF_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:af-production
+
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  script:
+    # Building DB Image
+    - echo "Building Database Image"
+    - cd DB
+    - docker build --tag $DB_RELEASE_IMAGE .
+    - docker push $DB_RELEASE_IMAGE
+    - cd ..
+    
+    # Building Micro-Service Image 
+    - echo "Building Micro-Service Image"
+    - cd MS
+    - docker build --tag $MS_RELEASE_IMAGE .
+    - docker push $MS_RELEASE_IMAGE
+    - cd ..
+    
+    # Building Web Image
+    - echo "Building Web Image"
+    - cd Web
+    - docker build --tag $WEB_RELEASE_IMAGE .
+    - docker push $WEB_RELEASE_IMAGE
+    - cd ..
+
+    # Building Airflow Image
+    - echo "Building Airflow Image"
+    - cd airflow
+    - docker build --tag $AF_RELEASE_IMAGE .
+    - docker push $AF_RELEASE_IMAGE
+    - cd ..
+
+  only:
+    - master
+
+# Deploying Images:
+#   stage: deployment
+#   tags: 
+#     - shell
+#   script:
+#     - git fetch
+#     - git checkout UAT
+#     - git pull origin UAT
+#     - sudo docker-compose -f UAT-docker-compose.yml down
+#     - sudo docker image prune -a -f
+#     - sudo docker volume prune -f
+#     - sudo docker system prune -f
+#     - sudo docker-compose -f UAT-docker-compose.yml up
+#   only:
+#     - UAT

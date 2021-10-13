@@ -1,0 +1,49 @@
+### MS ###
+.vscode
+*.log
+*.pot
+*.pyc 
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+MS/mlaas/static/server/*
+__pycache__
+mlruns
+scaled_dataset/*
+*.npy
+cleanup_dags
+manual_modeling_dags
+latest
+
+### Angular ###
+# compiled output
+dist/
+tmp/
+app/**/*.js
+app/**/*.js.map
+
+# dependencies
+node_modules/
+bower_components/
+
+# IDEs and editors
+.idea/
+
+# misc
+.sass-cache/
+connect.lock/
+coverage/
+libpeerconnection.log/
+npm-debug.log
+testem.log
+typings/
+
+# e2e
+e2e/*.js
+e2e/*.map
+
+# System Files
+.DS_Store/
+
+# Mongo db
+mongodb
