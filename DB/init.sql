@@ -59,8 +59,8 @@ CREATE TABLE mlaas.activity_detail_tbl (
     "index" bigserial NOT NULL,
     activity_id text NULL,
     user_name text NULL,
-    project_id int8 NULL,
-    dataset_id int8 NULL,
+    profile_id int8 NULL,
+    video_id int8 NULL,
     activity_description text NULL,
     start_time timestamp NOT NULL DEFAULT now(),
     end_time timestamp NULL,
@@ -71,8 +71,8 @@ CREATE TABLE mlaas.activity_detail_tbl (
 
 --Create subscription table
 CREATE TABLE mlaas.subscription_plan_tbl (
-    subid bigserial NOT NULL,
-    menuid text NULL,
+    sub_id bigserial NOT NULL,
+    menu_id int8 NULL,
     plan_name text NULL,
     plan_desc text NULL,
     plan_type text NULL,
@@ -107,8 +107,8 @@ CREATE TABLE mlaas.video_reaction_tbl (
     created_on timestamptz NOT NULL DEFAULT now()
 );
 --Create video master table
-CREATE TABLE mlaas.player_stats_tbl (
-    usid bigserial NOT NULL,
+CREATE TABLE mlaas.player_history_tbl (
+    profile_id int8 NOT NULL,
     weight text NULL,
     height text NULL,
     activity_start_year text NULL,
@@ -196,7 +196,7 @@ Insert into mlaas.activity_master_tbl values (DEFAULT,'ur_6','Forgot Password','
 
 Insert into mlaas.activity_master_tbl values (DEFAULT,'rc_7','Like','Video reaction Like','US','Ignore',0,-1,0,0);
 Insert into mlaas.activity_master_tbl values (DEFAULT,'rc_8','Un Like','Video reaction un like','US','Started',0,-1,0,0);
-Insert into mlaas.activity_master_tbl values (DEFAULT,'rc_9','Vicroty','Video reaction victory','US','Ended',0,-1,0,0);
+Insert into mlaas.activity_master_tbl values (DEFAULT,'rc_9','Victory','Video reaction victory','US','Ended',0,-1,0,0);
 Insert into mlaas.activity_master_tbl values (DEFAULT,'rc_10','Frustraction','Video reaction frustration','US','Ended',0,-1,0,0);
 Insert into mlaas.activity_master_tbl values (DEFAULT,'rc_11','Anger','Video reaction anger','US','Ended',0,-1,0,0);
 

@@ -43,15 +43,10 @@ LogObject = cl.LogClass(user_name,log_enable)
 LogObject.log_setting()
 logger = logging.getLogger('profile_view')
 
-profile_obj = clsProfile()
+profile_obj = clsProfile() #initialize the Profile Class
 json_obj = JsonFormatClass() #initialize the JsonFormat Class 
 timeline_Obj=activity_timeline.ActivityTimelineClass(database,user,password,host,port) #initialize the ActivityTimeline Class
 
-'''
-DBObject=db.DBClass() #Get DBClass object
-connection,connection_string=DBObject.database_connection(database,user,password,host,port) #Create Connection with postgres Database which will return connection object,conection_string(For Data Retrival)
-IngestionObj=ingestion.IngestClass(database,user,password,host,port) #initialize the Ingest Class 
-PC_OBJ = PreprocessingClass(database,user,password,host,port)'''
 
 # Class for Profile to retrive & insert 
 #It will take url string as mlaas/ingest/create_Profile/.
@@ -69,34 +64,30 @@ class CreateProfileClass(APIView):
                         Response(return false if failed otherwise json data)
                 """
                 try:
-                        logging.info("data ingestion : CreateProfileClass : GET Method : execution start")
+                        logging.info("CreateProfileClass : GET Method : execution start")
                         user_name  = request.query_params.get('user_name') #get Username
                         profile_id  = request.query_params.get('profile_id') #get profile_id
                         profile_df = profile_obj.show_profile_details(user_name,profile_id) #call show_Profile_details to retrive Profile detail data and it will return dataframe
                         if isinstance(profile_df,str): #check the instance of dataset_df
                                 status_code,error_msg=json_obj.get_Status_code(profile_df) # extract the status_code and error_msg from Profile_df
-                                logging.info("data ingestion : CreateProfileClass : GET Method : execution : status_code :"+ status_code)
+                                logging.info("CreateProfileClass : GET Method : execution : status_code :"+ status_code)
                                 return Response({"status_code":status_code,"error_msg":error_msg,"response":"false"})
                         else:
-                                logging.info("data ingestion : CreateProfileClass : GET Method : execution : status_code : 200")
+                                logging.info("CreateProfileClass : GET Method : execution : status_code : 200")
                                 return Response({"status_code":"200","error_msg":"successfull retrival","response":profile_df})  
 
                 except Exception as e:
-                        logging.error("data ingestion : CreateProfileClass : GET Method : " + str(e))
-                        logging.error("data ingestion : CreateProfileClass : GET Method : " +traceback.format_exc())
+                        logging.error("CreateProfileClass : GET Method : " + str(e))
+                        logging.error("CreateProfileClass : GET Method : " +traceback.format_exc())
                         return Response({"status_code":"500","error_msg":str(e),"response":"false"})  
         
         def post(self, request, format=None):
                 """
-                This function is used to Create Profile and Insert Uploaded CSV File data into Table
+                This function is used to Create Or Update Profile
 
                 Args  : 
                         User_name[(String)]   :[Name of user]
                         ProfileName[(String)] :[Name of Profile]
-                        Description[(String)] :[Discreption of Profile]
-                        dataset_visibility[(String)] :[Name of Visibility public or private]
-                        dataset_id[(Integer)] :[ID of dataset selected by user from dropdown]
-                        inputfile(CSV File)   :[Input CSV file]
                 Return : 
                         status_code(500 or 200),
                         error_msg(Error message for retrival & insertions failed or successfull),
@@ -106,16 +97,16 @@ class CreateProfileClass(APIView):
                                 
                         logging.info("data ingestion : CreateProfileClass : POST Method : execution start")
                         user_name=request.POST.get('user_name')  #get Username
-                        player_name=request.POST.get('player_name') #get Profile_name
-                        type=request.POST.get('type') #get Profile description
-                        category=request.POST.get('category') #get dataset description
-                        player_role = request.POST.get('player_role')#get dataset name
-                        dob = request.POST.get('dob')#get dataset name
-                        team_name = request.POST.get('team_name') #get Visibility
-                        founded_since = request.POST.get('founded_since') # get dataset_id, if selected the dataset from dropdown menu otherwise it will be blank 
-                        profile_pict_path = request.POST.get('profile_pict_path') 
+                        player_name=request.POST.get('player_name') #get player_name
+                        type=request.POST.get('type') #get type
+                        category=request.POST.get('category') #get category
+                        player_role = request.POST.get('player_role')#get player_role
+                        dob = request.POST.get('dob')#get dob
+                        team_name = request.POST.get('team_name') #get team_name
+                        founded_since = request.POST.get('founded_since') # get founded_since 
+                        profile_pict_path = request.POST.get('profile_pict_path') # get profile_pict_path
                                                
-                        profile_id=profile_obj.get_profile_id(user_name) #get the status if dataset exist or not 
+                        profile_id=profile_obj.get_profile_id(user_name) #get the status if profile exist or not 
                         if profile_id > 0:
                                 update_status=profile_obj.update_profile_details(user_name,profile_id,player_name,type,category,player_role,dob,team_name,founded_since,profile_pict_path) # extract the status_code and error_msg from datasetexist_status
                                 status_code=200
@@ -129,7 +120,7 @@ class CreateProfileClass(APIView):
                                         status_code=200
                                         error_msg=""
                                         #status_code,error_msg=json_obj.get_Status_code(profile_status) # extract the status_code and error_msg from Profile_Status
-                                        logging.info("data ingestion : CreateProfileClass : POST Method : execution stop : status_code :"+status_code)
+                                        logging.info("data ingestion : CreateProfileClass : POST Method : execution stop : status_code :")
                                         return Response({"status_code":status_code,"error_msg":error_msg,"response":"false"}) 
                                 else:
                                         activity_id = 'ur_5'
