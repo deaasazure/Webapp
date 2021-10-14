@@ -61,7 +61,7 @@ CREATE TABLE mlaas.user_auth_tbl (
 	uid bigserial NOT NULL,
 	user_name text NULL,
 	"password" text NULL,
-	PRIMARY KEY(user_name)
+	PRIMARY KEY(uid)
 );
 
 CREATE TABLE mlaas.player_profile_tbl (
