@@ -108,13 +108,7 @@ class ProfileClass():
             [tuple]: [it will return records in the form of tuple.]
         """
         logging.info("data ingestion : ProfileClass : make_profile_records : execution start")
-        
-        #TODO : both dag are not run together
-        # cleanup_dag_id = preprocessObj.get_cleanup_dag_name()
-        # cleanup_dag_id = None
-        # time.sleep(3)
-        # model_dag_id = get_modeling_dag_name()
-        
+             
         row = player_name,type,category,player_role,dob,team_name,founded_since,profile_pic_path,user_name
         row_tuples = [tuple(row)] # Make record for profile table.
         logging.info("data ingestion : ProfileClass : make_profile_records : execution end")
