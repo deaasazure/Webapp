@@ -74,12 +74,12 @@ CREATE TABLE mlaas.player_profile_tbl (
 	team_name text NULL,
 	founded_since text NULL,
 	profile_pict_path text NULL,
-	user_name text NULL,
+	uid int8 NOT NULL,
     created_on timestamptz NOT NULL DEFAULT now(),
 	PRIMARY KEY(profile_id),
 	CONSTRAINT fk_player_user
-      FOREIGN KEY(user_name) 
-	  REFERENCES mlaas.user_auth_tbl(user_name)
+      FOREIGN KEY(uid) 
+	  REFERENCES mlaas.user_auth_tbl(uid)
 );
 
 --Create subscription table
@@ -89,12 +89,12 @@ CREATE TABLE mlaas.subscription_plan_tbl (
     plan_name text NULL,
     plan_desc text NULL,
     plan_type text NULL,
-	user_name text NULL,
+	uid int8 NOT NULL,
     created_on timestamptz NOT NULL DEFAULT now(),
 	PRIMARY KEY(sub_id),
 	CONSTRAINT fk_sub_user
-      FOREIGN KEY(user_name) 
-	  REFERENCES mlaas.user_auth_tbl(user_name)
+      FOREIGN KEY(uid) 
+	  REFERENCES mlaas.user_auth_tbl(uid)
 );
 
 
@@ -107,12 +107,12 @@ CREATE TABLE mlaas.video_master_tbl (
     file_path text NULL,
 	file_visibility text NULL,
     file_description text NULL,
-	user_name text NULL,
+	uid int8 NOT NULL,
     created_on timestamptz NOT NULL DEFAULT now(),
 	PRIMARY KEY(video_id),
 	CONSTRAINT fk_vid_user
-      FOREIGN KEY(user_name) 
-	  REFERENCES mlaas.user_auth_tbl(user_name)
+      FOREIGN KEY(uid) 
+	  REFERENCES mlaas.user_auth_tbl(uid)
 );
 
 --Create video master table
@@ -125,7 +125,7 @@ CREATE TABLE mlaas.video_reaction_tbl (
     frustration int8 NULL,
     anger int8 NULL,
 	comment text NULL,
-    user_name text NULL,
+    uid int8 NOT NULL,
     created_on timestamptz NOT NULL DEFAULT now(),
 	CONSTRAINT fk_video_key
     FOREIGN KEY(video_id) 
@@ -169,11 +169,11 @@ saves_count int8 NULL,
 catches_and_punches_count int8 NULL,
 goals_allowed  int8 NULL,
 saved_penalty int8 NULL,
-user_name text NULL,
+uid int8 NOT NULL,
 created_on timestamptz NOT NULL DEFAULT now(),
 CONSTRAINT fk_ph_user
-      FOREIGN KEY(user_name) 
-	  REFERENCES mlaas.user_auth_tbl(user_name)
+      FOREIGN KEY(uid) 
+	  REFERENCES mlaas.user_auth_tbl(uid)
 );
 
 --Insert menu_tbl
@@ -189,12 +189,12 @@ Insert into  mlaas.menu_tbl values (9,'Product','About us',null,null,null);
 Insert into  mlaas.menu_tbl values (10,'Product','Privacy Policy',null,null,null);
 
 --Insert user_auth_tbl
-Insert into mlaas.user_auth_tbl values(1,'mehul','mehul');
-Insert into mlaas.user_auth_tbl values(2,'adarsh','adarsh');
-Insert into mlaas.user_auth_tbl values(3,'vishal','vishal');
-Insert into mlaas.user_auth_tbl values(4,'jay','jay');
-Insert into mlaas.user_auth_tbl values(5,'chirag','chirag');
-Insert into mlaas.user_auth_tbl values(6,'shivangi','shivangi');
+Insert into mlaas.user_auth_tbl values('admin','admin');
+Insert into mlaas.user_auth_tbl values('adarsh','adarsh');
+Insert into mlaas.user_auth_tbl values('vishal','vishal');
+Insert into mlaas.user_auth_tbl values('jay','jay');
+Insert into mlaas.user_auth_tbl values('chirag','chirag');
+Insert into mlaas.user_auth_tbl values('mehul','mehul');
 
 
 --Insert parent_activity_tbl
