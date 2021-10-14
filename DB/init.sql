@@ -58,7 +58,7 @@ CREATE TABLE mlaas.menu_tbl (
 );
 
 CREATE TABLE mlaas.user_auth_tbl (
-	uid int8 NULL,
+	uid bigserial NOT NULL,
 	user_name text NULL,
 	"password" text NULL,
 	PRIMARY KEY(user_name)
@@ -134,7 +134,6 @@ CREATE TABLE mlaas.video_reaction_tbl (
 --Create video master table
 CREATE TABLE mlaas.player_history_tbl (
 	ph_id bigserial NOT NULL,
-    profile_id int8 NOT NULL,
     weight text NULL,
     height text NULL,
     activity_start_year text NULL,
