@@ -1,0 +1,29 @@
+version: '3.7'
+services:
+    postgres:                                           # create postgres container
+        build: ./DB
+        hostname: postgresql
+        container_name: postgres_container
+        volumes:
+            - postgres_data:/var/lib/postgresql/data/
+        ports:
+            - "5432:5432"
+        environment:
+            - POSTGRES_USER=airflow
+            - POSTGRES_PASSWORD=airflow
+            - POSTGRES_DB=airflow
+    web:                                             # create a MLFlow container
+        build: './MS' 
+        container_name: ms_container
+        command: sh -c "python manage.py runserver 0.0.0.0:8000" 
+        volumes: 
+            - "./MS/main:/main"
+        ports:
+            - "7077:7077" 
+            - "8080:8080"
+            - "8000:8000"
+        links:
+            - postgres
+volumes:
+    postgres_data:
+    data:
