@@ -11,4 +11,3 @@ azure-storage-blob
 pyspark==3.0.3
 pyspark-stubs==3.0.0.post3
 unidecode
-pymssql

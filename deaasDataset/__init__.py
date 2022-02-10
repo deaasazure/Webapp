@@ -1,4 +1,6 @@
 import logging
+
+from sqlalchemy import BLOB
 from .database_op import Database_op
 import azure.functions as func
 from .json_formater import *
@@ -7,6 +9,7 @@ import os
 from io import StringIO
 from urllib.request import urlopen
 from unidecode import unidecode
+# import Microsoft.Azure.WebJobs
 
 database_obj = Database_op()
 json_obj = JsonFormatClass() #initialize the JsonFormat Class
@@ -17,11 +20,14 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     
     try:
         # If the request is a GET request, then fetch the data from the database.
+        
         if req.method == "GET":
-            # data = {'test'}
+            data = 'test'
             user_name=req.params.get('user_name')  #get Username
             project_name=req.params.get('project_name')
             dataset_name=req.params.get('dataset_name')
+            logging.info("project_name :"+project_name)
+            logging.info("dataset_name :"+dataset_name)
             if project_name and dataset_name:
                 # msg = database_obj.insert_data(account_number, name)  
                 project_id=database_obj.get_project_id(project_name)
@@ -32,19 +38,19 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 data=database_obj.select_records(sql_command)
                 if len(data) == 0 or data is None:
                     Resp_data={"No Data"}
-                    raise "RecordNotFound"
+                    # raise "RecordNotFound"
                 else:
                     dataset_file_path=data['dataset_file_path'][0]
                     file_name=data['file_name'][0]
                     upload_file_path = dataset_file_path+"/"+file_name
                     logging.info("upload_file_path :"+upload_file_path)
                     dataset_csv_df=database_obj.read_azure_storage(upload_file_path)
-                    Resp_data = dataset_csv_df.to_json()
+                    data = dataset_csv_df.to_json()
                     # Resp_data=json_obj.get_json_format(Resp1_data)
                     # status_code,error_msg=json_obj.get_Status_code(data)                    
                
             # data = database_obj.get_data()
-            return func.HttpResponse(Resp_data)
+            return func.HttpResponse(data)
                     
         # If the request is a POST request, then insert the data into the database.
         else: 
