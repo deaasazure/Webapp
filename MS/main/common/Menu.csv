@@ -1,0 +1,5 @@
+﻿id,modulename,menuname,parent_id,url,icon
+2,DI,Data Ingestion,null,null,bx-home-circle
+3,DI,Create Dataset,2,/dataset,null
+4,DI,Create Project,2,/create,null
+5,DI,All Projects,2,/project,null
